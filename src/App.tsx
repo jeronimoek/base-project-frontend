@@ -1,5 +1,6 @@
-import logo from "./logo.svg";
-import "./App.css";
+import logo from "logo.svg";
+import "App.css";
+import { Home } from "@pages/Home";
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
+          <Home />
         </p>
         <a
           className="App-link"
