@@ -1,0 +1,107 @@
+@keyframes shake {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(15deg);
+  }
+
+  75% {
+    transform: rotate(-15deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.home {
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+
+  &_container {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+
+    .tasks {
+      text-align: left;
+
+      &--item {
+        margin: 10px 0;
+        border: solid 1px gray;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+
+        .anticon {
+          display: inline-block;
+          padding: 10px;
+          color: black;
+          transition: color 0.5s;
+
+          &.check-icon:hover {
+            color: green;
+            cursor: pointer;
+          }
+
+          &.edit-icon {
+            &.disabled {
+              color: grey;
+            }
+            &:not(.disabled):hover {
+              color: blue;
+            }
+          }
+
+          &:not(.disabled):hover {
+            position: relative;
+            svg {
+              animation-duration: 0.5s;
+              animation-name: shake;
+            }
+          }
+
+          &.disabled {
+            cursor: not-allowed;
+          }
+        }
+
+        .title {
+          user-select: none;
+          cursor: text;
+          border-left: solid 1px gray;
+          flex: 1;
+          font-size: 16px;
+
+          &-text {
+            padding: 10px;
+            display: inline-block;
+          }
+
+          & > * {
+            width: 100%;
+            height: 40px;
+            font-size: 16px;
+            padding: 10px;
+          }
+        }
+      }
+    }
+
+    .add-form {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      .ant-form-item {
+        width: 100%;
+        input {
+          border-color: gray;
+        }
+      }
+    }
+  }
+}
