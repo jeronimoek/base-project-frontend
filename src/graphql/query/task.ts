@@ -22,6 +22,7 @@ query tasks {
         description
         estimated_time
         parent_task_id
+        completed
         its
         uts
     }
