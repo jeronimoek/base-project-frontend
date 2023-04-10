@@ -37,6 +37,12 @@
     .tasks {
       text-align: left;
 
+      .child-container {
+        margin-left: 10px;
+        border-left: solid 1px black;
+        padding-left: 10px;
+      }
+
       &--item {
         margin: 10px 0;
         border: solid 1px gray;
@@ -115,7 +121,6 @@
 
             > span {
               display: inline-block;
-              height: 100%;
               overflow: hidden;
               text-overflow: ellipsis;
               width: 100%;

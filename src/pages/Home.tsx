@@ -133,15 +133,145 @@ export function Home() {
     return result
   }
 
-  const parents: number[] = []
+  interface ITaskTree extends ITask {
+    childs?: ITaskTree[]
+  }
+
+  const renderTask = (task: ITaskTree) => {
+    return (
+      <div>
+        <div
+          draggable
+          onDragStart={ev => {
+            drag(ev, task.id)
+          }}
+          onDrop={async ev => {
+            await drop(ev, task.id)
+          }}
+          onDragOver={ev => {
+            allowDrop(ev)
+          }}
+          className="tasks--item"
+          key={task.id}
+        >
+          <CheckCircleOutlined
+            className={'check-icon' + (task.completed ? ' active' : '')}
+            onClick={async () => {
+              await updateTask(task.id, { completed: !task.completed })
+            }}
+          />
+          <div className="title">
+            {updatingTaskId !== task.id ? (
+              <span
+                className="title-text"
+                onClick={() => {
+                  setUpdatingTaskId(task.id)
+                }}
+              >
+                <Tooltip title={task.title}>
+                  {task.completed ? (
+                    <span style={{ textDecoration: 'line-through' }}>
+                      {task.title}
+                    </span>
+                  ) : (
+                    task.title
+                  )}
+                </Tooltip>
+              </span>
+            ) : (
+              <Input.TextArea
+                ref={editTitleRef}
+                bordered={false}
+                className="title-input"
+                placeholder="Task title"
+                onPressEnter={async event => {
+                  const element = event.currentTarget as HTMLTextAreaElement
+
+                  await updateTask(task.id, { title: element.value })
+                  setUpdatingTaskId(undefined)
+                }}
+                defaultValue={task.title}
+                autoFocus
+                rows={2}
+              />
+            )}
+          </div>
+          {updatingTaskId === task.id && (
+            <CloseOutlined
+              onClick={() => {
+                setUpdatingTaskId(undefined)
+              }}
+              className="close-icon"
+            />
+          )}
+          {updatingTaskId !== task.id ? (
+            <EditOutlined
+              onClick={() => {
+                setUpdatingTaskId(task.id)
+              }}
+              className="edit-icon"
+            />
+          ) : (
+            <CheckOutlined
+              onClick={async () => {
+                const editTitleElement =
+                  editTitleRef.current?.resizableTextArea?.textArea
+
+                await updateTask(task.id, {
+                  title: editTitleElement?.value,
+                })
+
+                setUpdatingTaskId(undefined)
+              }}
+              className="ok-icon"
+            />
+          )}
+          <DeleteOutlined
+            onClick={async () => {
+              await deleteTask({ variables: { id: task.id } })
+            }}
+            className="delete-icon"
+          />
+        </div>
+        <div className="child-container">{task.childs?.map(renderTask)}</div>
+      </div>
+    )
+  }
+
+  const parents: ITaskTree[] = []
+
+  const rootTasks: ITaskTree[] = []
+
+  tasks &&
+    getSortedArr(JSON.parse(JSON.stringify(tasks)))?.forEach(task => {
+      while (
+        parents.length &&
+        parents[parents.length - 1].id !== task.parent_task_id
+      ) {
+        parents.pop()
+      }
+
+      const parent = parents[parents.length - 1]
+
+      if (parent) {
+        if (!parent.childs) {
+          parent.childs = []
+        }
+        parent.childs.push(task)
+      } else {
+        rootTasks.push(task)
+      }
+
+      parents.push(task)
+    })
 
   return (
     <div className="home">
       <div className="home_container">
         <h1>My Tasks</h1>
         <div className="tasks">
-          {tasks &&
-            getSortedArr([...tasks])?.map(task => {
+          {rootTasks.map(renderTask)}
+          {/* getSortedArr([...tasks])?.map(task => {
               while (
                 parents.length &&
                 parents[parents.length - 1] !== task.parent_task_id
@@ -248,7 +378,7 @@ export function Home() {
                   />
                 </div>
               )
-            })}
+            })} */}
         </div>
         <div>
           <Form
